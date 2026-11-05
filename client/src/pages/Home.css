@@ -1,0 +1,150 @@
+.home-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding-bottom: 60px;
+}
+
+.hero {
+  text-align: center;
+  padding: 90px 20px;
+  background: white;
+}
+
+.hero-label {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.hero h1 {
+  font-size: 48px;
+  line-height: 1.2;
+  color: #111827;
+  margin: 20px 0;
+}
+
+.hero-description {
+  color: #64748b;
+  font-size: 17px;
+  max-width: 550px;
+  margin: 0 auto 25px;
+  line-height: 1.7;
+}
+
+.write-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 13px 25px;
+  border-radius: 7px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.write-btn:hover {
+  background: #1d4ed8;
+}
+
+.articles-section {
+  max-width: 1100px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.articles-section h2 {
+  font-size: 28px;
+  color: #111827;
+}
+
+.section-description {
+  color: #64748b;
+  margin-bottom: 30px;
+}
+
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.article-card {
+  background: white;
+  padding: 25px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  transition: 0.3s;
+}
+
+.article-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.article-tag {
+  display: inline-block;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.article-card h3 {
+  color: #111827;
+  margin: 18px 0 10px;
+}
+
+.article-card p {
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.article-author {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 15px;
+  margin-top: 20px;
+  color: #475569;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .article-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.article-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.article-link:hover h3 {
+  color: #2563eb;
+}
+.tag-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 25px 0;
+}
+
+.tag-filters button {
+  padding: 9px 18px;
+  border: 1px solid #d1d5db;
+  border-radius: 20px;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+}
+
+.tag-filters button:hover,
+.tag-filters button.active {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
