@@ -15,7 +15,7 @@ function Profile() {
       } catch (err) {
         setError(
           err.response?.data?.message ||
-          "Unable to load profile."
+            "Unable to load profile."
         );
       } finally {
         setLoading(false);
@@ -25,36 +25,86 @@ function Profile() {
     fetchProfile();
   }, []);
 
-  if (loading) return <p>Loading profile...</p>;
-  if (error) return <p>{error}</p>;
-  if (!user) return <p>Profile not found.</p>;
+  if (loading) {
+    return (
+      <div className="profile-page">
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="profile-page">
+        <p className="profile-error">{error}</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="profile-page">
+        <p>Profile not found.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-page">
       <div className="profile-card">
-        <div className="profile-avatar">
-          {user.name?.charAt(0).toUpperCase()}
-        </div>
 
-        <h1>{user.name}</h1>
-        <p className="username">@{user.username}</p>
+        <div className="profile-top">
+          <span className="profile-label">
+            YOUR ACCOUNT
+          </span>
+
+          <div className="profile-avatar">
+            {user.name?.charAt(0).toUpperCase() || "U"}
+          </div>
+
+          <h1>{user.name}</h1>
+
+          <p className="username">
+            @{user.username}
+          </p>
+
+          <p className="profile-description">
+            Welcome to your developer profile.
+          </p>
+        </div>
 
         <div className="profile-details">
-          <div>
-            <strong>Email</strong>
-            <p>{user.email}</p>
+          <h2>Personal Information</h2>
+
+          <div className="profile-detail-item">
+            <div>
+              <strong>Full Name</strong>
+              <p>{user.name || "Not available"}</p>
+            </div>
           </div>
 
-          <div>
-            <strong>Username</strong>
-            <p>{user.username}</p>
+          <div className="profile-detail-item">
+            <div>
+              <strong>Email Address</strong>
+              <p>{user.email || "Not available"}</p>
+            </div>
           </div>
 
-          <div>
-            <strong>Bio</strong>
-            <p>{user.bio || "No bio added yet."}</p>
+          <div className="profile-detail-item">
+            <div>
+              <strong>Username</strong>
+              <p>@{user.username || "Not available"}</p>
+            </div>
+          </div>
+
+          <div className="profile-detail-item">
+            <div>
+              <strong>About Me</strong>
+              <p>{user.bio || "No bio added yet."}</p>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   );

@@ -25,10 +25,12 @@ function Write() {
   const [showPreview, setShowPreview] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
   };
 
   const markdownComponents = {
@@ -57,15 +59,20 @@ function Write() {
     setLoading(true);
 
     try {
-      const tagNames = formData.tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean);
+      const tagNames = [
+        ...new Set(
+          formData.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean)
+        ),
+      ];
 
       const tagIds = [];
 
       for (const name of tagNames) {
         const response = await API.post("/tags", { name });
+
         tagIds.push(response.data.tag._id);
       }
 
@@ -79,11 +86,13 @@ function Write() {
 
       setMessage("Article saved successfully!");
 
-      setTimeout(() => navigate("/dashboard"), 1000);
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
     } catch (error) {
       setMessage(
         error.response?.data?.message ||
-        "Unable to save article. Please try again."
+          "Unable to save article. Please try again."
       );
     } finally {
       setLoading(false);
@@ -93,43 +102,72 @@ function Write() {
   return (
     <div className="write-page">
       <div className="write-container">
-        <h1>Write Your Article</h1>
 
-        <p className="write-subtitle">
-          Share your knowledge with the developer community.
-        </p>
+        <div className="write-header">
+          <span className="write-label">
+            CREATE SOMETHING GREAT
+          </span>
+
+          <h1>Write Your Article</h1>
+
+          <p className="write-subtitle">
+            Share your knowledge with the developer community.
+          </p>
+        </div>
 
         <form className="write-form" onSubmit={handleSubmit}>
-          <label>Article Title</label>
-          <input
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Enter your article title"
-            required
-          />
 
-          <label>Excerpt</label>
-          <input
-            name="excerpt"
-            value={formData.excerpt}
-            onChange={handleChange}
-            placeholder="Write a short description"
-          />
+          <div className="form-group">
+            <label htmlFor="title">Article Title</label>
 
-          <label>Article Content (Markdown Supported)</label>
-          <textarea
-            name="content"
-            rows="12"
-            value={formData.content}
-            onChange={handleChange}
-            placeholder="Start writing your article..."
-            required
-          />
+            <input
+              id="title"
+              name="title"
+              type="text"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Enter your article title"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="excerpt">Short Description</label>
+
+            <input
+              id="excerpt"
+              name="excerpt"
+              type="text"
+              value={formData.excerpt}
+              onChange={handleChange}
+              placeholder="Write a short description"
+            />
+          </div>
+
+          <div className="form-group">
+            <div className="content-label-row">
+              <label htmlFor="content">
+                Article Content
+              </label>
+
+              <span>Markdown Supported</span>
+            </div>
+
+            <textarea
+              id="content"
+              name="content"
+              rows="14"
+              value={formData.content}
+              onChange={handleChange}
+              placeholder="Start writing your article..."
+              required
+            />
+          </div>
 
           <div className="preview-controls">
             <button
               type="button"
+              className="preview-btn"
               onClick={() => setShowPreview(!showPreview)}
             >
               {showPreview ? "Hide Preview" : "Show Preview"}
@@ -144,34 +182,57 @@ function Write() {
                 remarkPlugins={[remarkGfm]}
                 components={markdownComponents}
               >
-                {formData.content || "Your preview will appear here..."}
+                {formData.content ||
+                  "Your preview will appear here..."}
               </ReactMarkdown>
             </div>
           )}
 
-          <label>Tags</label>
-          <input
-            name="tags"
-            value={formData.tags}
-            onChange={handleChange}
-            placeholder="React, JavaScript, Node.js"
-          />
+          <div className="form-group">
+            <label htmlFor="tags">Article Tags</label>
 
-          <label>Status</label>
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-          >
-            <option value="draft">Save as Draft</option>
-            <option value="published">Publish Article</option>
-          </select>
+            <input
+              id="tags"
+              name="tags"
+              type="text"
+              value={formData.tags}
+              onChange={handleChange}
+              placeholder="React, JavaScript, Node.js"
+            />
 
-          {message && <p>{message}</p>}
+            <span className="field-hint">
+              Separate multiple tags using commas.
+            </span>
+          </div>
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Saving..." : "Save Article"}
-          </button>
+          <div className="form-group">
+            <label htmlFor="status">Publishing Status</label>
+
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+            >
+              <option value="draft">Save as Draft</option>
+              <option value="published">Publish Article</option>
+            </select>
+          </div>
+
+          {message && (
+            <p className="write-message">{message}</p>
+          )}
+
+          <div className="write-actions">
+            <button
+              type="submit"
+              className="publish-btn"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Save Article"}
+            </button>
+          </div>
+
         </form>
       </div>
     </div>

@@ -18,17 +18,11 @@ function Home() {
           API.get("/tags"),
         ]);
 
-        setArticles(
-          postResponse.data.posts || postResponse.data
-        );
-
-        setTags(
-          tagResponse.data.tags || tagResponse.data
-        );
+        setArticles(postResponse.data.posts || postResponse.data);
+        setTags(tagResponse.data.tags || tagResponse.data);
       } catch (err) {
         setError(
-          err.response?.data?.message ||
-          "Unable to load articles."
+          err.response?.data?.message || "Unable to load articles."
         );
       } finally {
         setLoading(false);
@@ -51,33 +45,38 @@ function Home() {
 
   return (
     <div className="home-page">
-      <section className="hero-section">
-        <div className="hero-content">
-          <h1>
-            Share Your Ideas.
-            <br />
-            <span>Inspire The World.</span>
-          </h1>
 
-          <p>
-            A place where developers share knowledge,
-            learn new technologies and grow together.
-          </p>
+      {/* Hero Section */}
+      <section className="hero">
+        <span className="hero-label">A COMMUNITY FOR DEVELOPERS</span>
 
-          <Link to="/write" className="hero-btn">
-            Start Writing
-          </Link>
-        </div>
+        <h1>
+          Share Your Ideas.
+          <br />
+          Inspire The World.
+        </h1>
+
+        <p className="hero-description">
+          A place where developers share knowledge,
+          learn new technologies and grow together.
+        </p>
+
+        <Link to="/write" className="write-btn">
+          Start Writing
+        </Link>
       </section>
 
+      {/* Articles Section */}
       <section className="articles-section">
+
         <div className="section-header">
           <h2>Latest Articles</h2>
-          <p>
+          <p className="section-description">
             Explore ideas and insights from our community.
           </p>
         </div>
 
+        {/* Tag Filters */}
         <div className="tag-filters">
           <button
             className={selectedTag === "all" ? "active" : ""}
@@ -89,9 +88,7 @@ function Home() {
           {tags.map((tag) => (
             <button
               key={tag._id}
-              className={
-                selectedTag === tag._id ? "active" : ""
-              }
+              className={selectedTag === tag._id ? "active" : ""}
               onClick={() => setSelectedTag(tag._id)}
             >
               {tag.name}
@@ -99,6 +96,7 @@ function Home() {
           ))}
         </div>
 
+        {/* Articles */}
         {loading ? (
           <p>Loading articles...</p>
         ) : error ? (
@@ -109,42 +107,41 @@ function Home() {
             <p>Try selecting another topic.</p>
           </div>
         ) : (
-          <div className="articles-grid">
+          <div className="article-grid">
             {filteredArticles.map((article) => (
-              <div
-                className="article-card"
-                key={article._id}
-              >
+              <div className="article-card" key={article._id}>
+
+                <div className="article-tags">
+                  {article.tags?.map((tag, index) => (
+                    <span className="article-tag" key={tag._id || index}>
+                      {typeof tag === "object" ? tag.name : tag}
+                    </span>
+                  ))}
+                </div>
+
                 <Link
                   to={`/article/${article._id}`}
                   className="article-link"
                 >
                   <h3>{article.title}</h3>
-                  <p className="article-excerpt">
+
+                  <p>
                     {article.excerpt ||
                       article.content?.slice(0, 150)}
                   </p>
+
+                  <span className="read-more">Read Article →</span>
                 </Link>
 
-                <div className="article-meta">
-                  <span>
-                    By {article.author?.name || "Unknown Author"}
-                  </span>
-
-                  <span>
-                    {article.tags
-                      ?.map((tag) =>
-                        typeof tag === "object"
-                          ? tag.name
-                          : tag
-                      )
-                      .join(", ")}
-                  </span>
+                <div className="article-author">
+                  By {article.author?.name || "Unknown Author"}
                 </div>
+
               </div>
             ))}
           </div>
         )}
+
       </section>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import API from "../services/api";
+import "./Write.css";
 
 function EditArticle() {
   const { id } = useParams();
@@ -14,6 +15,7 @@ function EditArticle() {
   });
 
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -36,7 +38,10 @@ function EditArticle() {
           status: article.status || "draft",
         });
       } catch (error) {
-        setMessage("Unable to load article.");
+        setMessage(
+          error.response?.data?.message ||
+            "Unable to load article."
+        );
       } finally {
         setLoading(false);
       }
@@ -46,70 +51,133 @@ function EditArticle() {
   }, [id]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setSaving(true);
 
     try {
       await API.put(`/posts/${id}`, formData);
       navigate("/dashboard");
     } catch (error) {
       setMessage(
-        error.response?.data?.message || "Unable to update article."
+        error.response?.data?.message ||
+          "Unable to update article."
       );
+    } finally {
+      setSaving(false);
     }
   };
 
-  if (loading) return <p>Loading article...</p>;
+  if (loading) {
+    return (
+      <div className="write-page">
+        <p>Loading article...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="write-page">
       <div className="write-container">
-        <h1>Edit Article</h1>
 
-        {message && <p>{message}</p>}
+        <div className="write-header">
+          <span className="write-label">
+            UPDATE YOUR CONTENT
+          </span>
+
+          <h1>Edit Article</h1>
+
+          <p className="write-subtitle">
+            Make changes to your article and save your updates.
+          </p>
+        </div>
+
+        {message && (
+          <p className="write-message">{message}</p>
+        )}
 
         <form className="write-form" onSubmit={handleSubmit}>
-          <label>Title</label>
-          <input
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-          />
 
-          <label>Excerpt</label>
-          <input
-            name="excerpt"
-            value={formData.excerpt}
-            onChange={handleChange}
-          />
+          <div className="form-group">
+            <label htmlFor="title">Article Title</label>
 
-          <label>Content</label>
-          <textarea
-            name="content"
-            rows="12"
-            value={formData.content}
-            onChange={handleChange}
-            required
-          />
+            <input
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Enter article title"
+              required
+            />
+          </div>
 
-          <label>Status</label>
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-          >
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-          </select>
+          <div className="form-group">
+            <label htmlFor="excerpt">Short Description</label>
 
-          <button type="submit">Update Article</button>
+            <input
+              id="excerpt"
+              name="excerpt"
+              value={formData.excerpt}
+              onChange={handleChange}
+              placeholder="Write a short description"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="content">Article Content</label>
+
+            <textarea
+              id="content"
+              name="content"
+              rows="14"
+              value={formData.content}
+              onChange={handleChange}
+              placeholder="Write your article..."
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="status">Publishing Status</label>
+
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+            >
+              <option value="draft">Save as Draft</option>
+              <option value="published">Publish Article</option>
+            </select>
+          </div>
+
+          <div className="write-actions">
+            <button
+              type="button"
+              className="preview-btn"
+              onClick={() => navigate("/dashboard")}
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              className="publish-btn"
+              disabled={saving}
+            >
+              {saving ? "Updating..." : "Update Article"}
+            </button>
+          </div>
+
         </form>
       </div>
     </div>

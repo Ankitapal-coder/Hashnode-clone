@@ -7,165 +7,229 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const authMiddleware = require("../middleware/auth");
 
+// Generate JWT Token
+const generateToken = (userId) => {
+  return jwt.sign(
+    { userId },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+};
+
 // ================= REGISTER API =================
 
 router.post("/register", async (req, res) => {
-try {
-const { name, username, email, password } = req.body;
+  try {
+    const { name, username, email, password } = req.body;
 
-// Check required fields
-if (!name || !username || !email || !password) {
-  return res.status(400).json({
-    message: "All fields are required",
-  });
-}
+    // Validate input types
+    if (
+      typeof name !== "string" ||
+      typeof username !== "string" ||
+      typeof email !== "string" ||
+      typeof password !== "string"
+    ) {
+      return res.status(400).json({
+        message: "Please provide valid registration details",
+      });
+    }
 
-// Normalize input
-const normalizedEmail = email.toLowerCase().trim();
-const normalizedUsername = username.trim();
+    const normalizedName = name.trim();
+    const normalizedUsername = username.trim().toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
 
-// Check existing user
-const existingUser = await User.findOne({
-  $or: [
-    { email: normalizedEmail },
-    { username: normalizedUsername },
-  ],
-});
+    // Required fields
+    if (
+      !normalizedName ||
+      !normalizedUsername ||
+      !normalizedEmail ||
+      !password
+    ) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
 
-if (existingUser) {
-  return res.status(409).json({
-    message: "Email or username already exists",
-  });
-}
+    // Length validation
+    if (normalizedName.length < 2 || normalizedName.length > 50) {
+      return res.status(400).json({
+        message: "Name must be between 2 and 50 characters",
+      });
+    }
 
-// Hash password
-const hashedPassword = await bcrypt.hash(password, 10);
+    if (
+      normalizedUsername.length < 3 ||
+      normalizedUsername.length > 30 ||
+      !/^[a-z0-9_]+$/.test(normalizedUsername)
+    ) {
+      return res.status(400).json({
+        message: "Username must be 3-30 characters and contain only letters, numbers or underscores",
+      });
+    }
 
-// Create user
-const newUser = await User.create({
-  name: name.trim(),
-  username: normalizedUsername,
-  email: normalizedEmail,
-  password: hashedPassword,
-});
+    if (
+      normalizedEmail.length > 100 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
+    ) {
+      return res.status(400).json({
+        message: "Please enter a valid email address",
+      });
+    }
 
-// Generate token
-const token = jwt.sign(
-  { userId: newUser._id },
-  process.env.JWT_SECRET,
-  { expiresIn: "7d" }
-);
+    if (password.length < 8 || password.length > 128) {
+      return res.status(400).json({
+        message: "Password must be between 8 and 128 characters",
+      });
+    }
 
-return res.status(201).json({
-  message: "User registered successfully",
-  token,
-  user: {
-    id: newUser._id,
-    name: newUser.name,
-    username: newUser.username,
-    email: newUser.email,
-  },
-});
+    // Check existing user
+    const existingUser = await User.findOne({
+      $or: [
+        { email: normalizedEmail },
+        { username: normalizedUsername },
+      ],
+    });
 
-} catch (error) {
-console.error("Registration Error:", error);
+    if (existingUser) {
+      return res.status(409).json({
+        message: "Email or username already exists",
+      });
+    }
 
-return res.status(500).json({
-  message: "Server error during registration",
-});
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-}
+    // Create user
+    const newUser = await User.create({
+      name: normalizedName,
+      username: normalizedUsername,
+      email: normalizedEmail,
+      password: hashedPassword,
+    });
+
+    const token = generateToken(newUser._id.toString());
+
+    return res.status(201).json({
+      message: "User registered successfully",
+      token,
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        username: newUser.username,
+        email: newUser.email,
+      },
+    });
+
+  } catch (error) {
+    console.error("Registration Error:", error.message);
+
+    if (error.code === 11000) {
+      return res.status(409).json({
+        message: "Email or username already exists",
+      });
+    }
+
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        message: "Invalid registration details",
+      });
+    }
+
+    return res.status(500).json({
+      message: "Server error during registration",
+    });
+  }
 });
 
 // ================= LOGIN API =================
 
 router.post("/login", async (req, res) => {
-try {
-const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-// Check required fields
-if (!email || !password) {
-  return res.status(400).json({
-    message: "Email and password are required",
-  });
-}
+    if (
+      typeof email !== "string" ||
+      typeof password !== "string" ||
+      !email.trim() ||
+      !password
+    ) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
 
-// Find user
-const user = await User.findOne({
-  email: email.toLowerCase().trim(),
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Find user
+    const user = await User.findOne({
+      email: normalizedEmail,
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    // Compare password
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    const token = generateToken(user._id.toString());
+
+    return res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+      },
+    });
+
+  } catch (error) {
+    console.error("Login Error:", error.message);
+
+    return res.status(500).json({
+      message: "Server error during login",
+    });
+  }
 });
 
-if (!user) {
-  return res.status(401).json({
-    message: "Invalid email or password",
-  });
-}
-
-// Compare password
-const isPasswordCorrect = await bcrypt.compare(
-  password,
-  user.password
-);
-
-if (!isPasswordCorrect) {
-  return res.status(401).json({
-    message: "Invalid email or password",
-  });
-}
-
-// Generate token
-const token = jwt.sign(
-  { userId: user._id },
-  process.env.JWT_SECRET,
-  { expiresIn: "7d" }
-);
-
-return res.status(200).json({
-  message: "Login successful",
-  token,
-  user: {
-    id: user._id,
-    name: user.name,
-    username: user.username,
-    email: user.email,
-  },
-});
-
-} catch (error) {
-console.error("Login Error:", error);
-
-return res.status(500).json({
-  message: "Server error during login",
-});
-
-}
-});
-
-// ================= PROTECTED PROFILE API =================
+// ================= PROFILE API =================
 
 router.get("/profile", authMiddleware, async (req, res) => {
-try {
-const user = await User.findById(req.userId).select("-password");
+  try {
+    const user = await User.findById(req.userId)
+      .select("-password");
 
-if (!user) {
-  return res.status(404).json({
-    message: "User not found",
-  });
-}
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
 
-return res.status(200).json({
-  message: "Profile fetched successfully",
-  user,
+    return res.status(200).json({
+      message: "Profile fetched successfully",
+      user,
+    });
+
+  } catch (error) {
+    console.error("Profile Error:", error.message);
+
+    return res.status(500).json({
+      message: "Server error while fetching profile",
+    });
+  }
 });
 
-} catch (error) {
-console.error("Profile Error:", error);
-
-return res.status(500).json({
-  message: "Server error",
-});
-
-}
-});
-
-module.exports = router;  
+module.exports = router;

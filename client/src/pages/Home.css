@@ -1,150 +1,305 @@
+/* HOME PAGE */
+
 .home-page {
   min-height: 100vh;
-  background: #f8fafc;
-  padding-bottom: 60px;
+  background: #f8f8f6;
+  padding-bottom: 70px;
 }
 
+/* HERO SECTION */
+
 .hero {
+  width: 100%;
+  min-height: 430px;
+  padding: 85px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 90px 20px;
-  background: white;
+  background: #ffffff;
 }
 
 .hero-label {
-  color: #2563eb;
-  font-size: 13px;
-  font-weight: bold;
+  color: #3659d9;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: 2px;
+  margin-bottom: 12px;
 }
 
 .hero h1 {
-  font-size: 48px;
+  width: 100%;
+  max-width: 850px;
+  margin: 15px auto 20px;
+  color: #171717;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(38px, 5vw, 58px);
+  font-weight: 800;
   line-height: 1.2;
-  color: #111827;
-  margin: 20px 0;
+  letter-spacing: -2px;
+  text-align: center;
 }
 
 .hero-description {
-  color: #64748b;
-  font-size: 17px;
   max-width: 550px;
-  margin: 0 auto 25px;
+  margin: 0 auto 28px;
+  color: #737373;
+  font-size: 16px;
   line-height: 1.7;
 }
 
 .write-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 13px 25px;
-  border-radius: 7px;
-  font-size: 15px;
-  cursor: pointer;
+  display: inline-block;
+  padding: 13px 26px;
+  background: #3659d9;
+  color: #ffffff;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s ease;
 }
 
 .write-btn:hover {
-  background: #1d4ed8;
+  background: #2948bd;
+  transform: translateY(-2px);
 }
+
+/* ARTICLES SECTION */
 
 .articles-section {
-  max-width: 1100px;
-  margin: 60px auto;
-  padding: 0 20px;
+  width: 100%;
+  max-width: 1150px;
+  margin: 65px auto 0;
+  padding: 0 25px;
 }
 
-.articles-section h2 {
+.section-header {
+  margin-bottom: 25px;
+}
+
+.section-header h2 {
+  margin-bottom: 8px;
+  color: #171717;
+  font-family: "Manrope", sans-serif;
   font-size: 28px;
-  color: #111827;
+  font-weight: 800;
 }
 
 .section-description {
-  color: #64748b;
-  margin-bottom: 30px;
+  color: #737373;
+  font-size: 15px;
 }
+
+/* TAG FILTERS */
+
+.tag-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 25px 0 30px;
+}
+
+.tag-filters button {
+  padding: 9px 18px;
+  border: 1px solid #e8e8e4;
+  border-radius: 25px;
+  background: #ffffff;
+  color: #555555;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.tag-filters button:hover,
+.tag-filters button.active {
+  background: #3659d9;
+  border-color: #3659d9;
+  color: #ffffff;
+}
+
+/* ARTICLE GRID */
 
 .article-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
 }
 
 .article-card {
-  background: white;
+  min-width: 0;
   padding: 25px;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  transition: 0.3s;
+  background: #ffffff;
+  border: 1px solid #e8e8e4;
+  border-radius: 14px;
+  transition: 0.3s ease;
 }
 
 .article-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* ARTICLE TAGS */
+
+.article-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 15px;
 }
 
 .article-tag {
   display: inline-block;
-  color: #2563eb;
-  background: #eff6ff;
-  padding: 6px 12px;
+  padding: 6px 11px;
   border-radius: 20px;
-  font-size: 12px;
+  background: #eef1ff;
+  color: #3659d9;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ARTICLE CONTENT */
+
+.article-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
 
 .article-card h3 {
-  color: #111827;
-  margin: 18px 0 10px;
+  margin: 0 0 12px;
+  color: #171717;
+  font-family: "Manrope", sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .article-card p {
-  color: #64748b;
-  line-height: 1.6;
+  color: #737373;
   font-size: 14px;
+  line-height: 1.7;
 }
 
+.article-link:hover h3 {
+  color: #3659d9;
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 14px;
+  color: #3659d9;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ARTICLE AUTHOR */
+
 .article-author {
-  border-top: 1px solid #e5e7eb;
-  padding-top: 15px;
   margin-top: 20px;
-  color: #475569;
+  padding-top: 15px;
+  border-top: 1px solid #eeeeeb;
+  color: #737373;
   font-size: 13px;
 }
 
-@media (max-width: 768px) {
+/* EMPTY STATE */
+
+.empty-articles {
+  padding: 45px 20px;
+  background: #ffffff;
+  border: 1px solid #e8e8e4;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.empty-articles h3 {
+  margin-bottom: 8px;
+  color: #171717;
+}
+
+.empty-articles p {
+  color: #737373;
+  font-size: 14px;
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 900px) {
+  .article-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    min-height: 360px;
+    padding: 65px 18px;
+  }
+
   .hero h1 {
-    font-size: 34px;
+    font-size: 36px;
+    line-height: 1.25;
+    letter-spacing: -1px;
+  }
+
+  .hero-description {
+    font-size: 14px;
+  }
+
+  .articles-section {
+    margin-top: 45px;
+    padding: 0 18px;
+  }
+
+  .section-header h2 {
+    font-size: 24px;
   }
 
   .article-grid {
     grid-template-columns: 1fr;
   }
+
+  .article-card {
+    padding: 20px;
+  }
 }
-.article-link {
-  color: inherit;
-  text-decoration: none;
+@media (max-width: 900px) {
+  .article-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-.article-link:hover h3 {
-  color: #2563eb;
-}
-.tag-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 25px 0;
-}
+@media (max-width: 600px) {
+  .hero {
+    min-height: auto;
+    padding: 55px 16px;
+  }
 
-.tag-filters button {
-  padding: 9px 18px;
-  border: 1px solid #d1d5db;
-  border-radius: 20px;
-  background: white;
-  color: #374151;
-  cursor: pointer;
-}
+  .hero h1 {
+    font-size: 34px;
+    letter-spacing: -1px;
+  }
 
-.tag-filters button:hover,
-.tag-filters button.active {
-  background: #2563eb;
-  color: white;
-  border-color: #2563eb;
+  .hero-description {
+    font-size: 14px;
+  }
+
+  .articles-section {
+    padding: 0 16px;
+    margin-top: 40px;
+  }
+
+  .article-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .article-card {
+    padding: 20px;
+  }
+
+  .tag-filters {
+    gap: 8px;
+  }
 }

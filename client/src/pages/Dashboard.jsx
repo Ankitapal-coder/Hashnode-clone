@@ -16,7 +16,8 @@ function Dashboard() {
         setPosts(response.data.posts || response.data);
       } catch (err) {
         setError(
-          err.response?.data?.message || "Unable to load your articles."
+          err.response?.data?.message ||
+            "Unable to load your articles."
         );
       } finally {
         setLoading(false);
@@ -43,6 +44,7 @@ function Dashboard() {
 
     try {
       setDeletingId(id);
+      setError("");
 
       await API.delete(`/posts/${id}`);
 
@@ -51,31 +53,43 @@ function Dashboard() {
       );
     } catch (err) {
       setError(
-        err.response?.data?.message || "Unable to delete article."
+        err.response?.data?.message ||
+          "Unable to delete article."
       );
     } finally {
       setDeletingId(null);
     }
   };
 
-  if (loading) return <p>Loading your dashboard...</p>;
+  if (loading) {
+    return (
+      <div className="dashboard-page">
+        <p>Loading your dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-page">
       <div className="dashboard-header">
         <div>
+          <span className="dashboard-label">
+            YOUR WORKSPACE
+          </span>
           <h1>My Dashboard</h1>
           <p>Manage your articles and share your ideas.</p>
         </div>
 
-        <Link to="/write" className="write-btn">
+        <Link to="/write" className="new-post-btn">
           + Write Article
         </Link>
       </div>
 
-      {error && <p>{error}</p>}
+      {error && (
+        <p className="dashboard-error">{error}</p>
+      )}
 
-      <div className="stats-container">
+      <div className="stats-grid">
         <div className="stat-card">
           <h3>Total Articles</h3>
           <h2>{posts.length}</h2>
@@ -92,22 +106,54 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="articles-section">
-        <h2>My Articles</h2>
+      <div className="my-articles">
+        <div className="articles-heading">
+          <div>
+            <h2>My Articles</h2>
+            <p>All your published articles and saved drafts.</p>
+          </div>
+          <span className="article-count">
+            {posts.length} Articles
+          </span>
+        </div>
 
         {posts.length === 0 ? (
           <div className="empty-state">
             <h3>No articles yet!</h3>
-            <p>Start writing your first article.</p>
-            <Link to="/write">Create Article</Link>
+            <p>
+              Start writing your first article and share
+              your knowledge with the community.
+            </p>
+            <Link to="/write" className="new-post-btn">
+              Create Article
+            </Link>
           </div>
         ) : (
           <div className="dashboard-articles">
             {posts.map((post) => (
-              <div className="dashboard-article-card" key={post._id}>
+              <div
+                className="dashboard-article-card"
+                key={post._id}
+              >
+                <div className="dashboard-article-top">
+                  <span
+                    className={`post-status ${
+                      post.status === "published"
+                        ? "published"
+                        : "draft"
+                    }`}
+                  >
+                    {post.status || "Unknown"}
+                  </span>
+                </div>
+
                 <h3>{post.title}</h3>
-                <p>{post.excerpt}</p>
-                <span>{post.status}</span>
+
+                <p className="dashboard-excerpt">
+                  {post.excerpt ||
+                    post.content?.slice(0, 150) ||
+                    "No description available."}
+                </p>
 
                 <div className="article-actions">
                   <Link

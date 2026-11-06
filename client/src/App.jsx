@@ -27,22 +27,9 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/write" element={<Write />} />
-
-          <Route path="/article/:id"element={<ArticleDetails/>}/>
-
-          <Route path="/edit-article/:id"element={<EditArticle/>}/>
-
-          <Route element={<ProtectedRoute />}>
-  <Route path="/dashboard" element={<Dashboard />} />
-  <Route path="/write" element={<Write />} />
-  <Route path="/edit-article/:id" element={<EditArticle />} />
-  <Route path="/profile" element={<Profile />} />
-</Route>
-  
-
-
-
-          
+          <Route path="/article/:id" element={<ArticleDetails />} />
+          <Route path="/edit-article/:id" element={<EditArticle />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
     </BrowserRouter>
